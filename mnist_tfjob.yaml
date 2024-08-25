@@ -1,0 +1,22 @@
+apiVersion: kubeflow.org/v1
+kind: TFJob
+metadata:
+  name: mnist-training
+spec:
+  tfReplicaSpecs:
+    Worker:
+      replicas: 1
+      restartPolicy: OnFailure
+      template:
+        spec:
+          containers:
+            - name: tensorflow
+              image: grechadev/dag_ml:latest
+              command: ["python", "/mnist_train.py"]
+              volumeMounts:
+                - name: model-storage
+                  mountPath: /mnt
+          volumes:
+            - name: model-storage
+              persistentVolumeClaim:
+                claimName: mnist-pvc
